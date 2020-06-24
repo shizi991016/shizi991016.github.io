@@ -1,0 +1,184 @@
+body {
+    background-color: whitesmoke;
+}
+
+.main {
+    margin: auto;
+    font: 20px times serif;
+}
+
+.hidden {
+    display: none;
+}
+
+.title {
+    text-align: center;
+    font: italic bold 30px times serif;
+    color: burlywood;
+    text-shadow: 5px 5px 4px darkgray;
+}
+
+#inputText {
+    position: relative;
+    left: 10px;
+    width: 50%;
+    height: 30px;
+}
+
+#inputHour, #inputMinute {
+    height: 30px;
+    position: relative;
+    left: 10px;
+    width: 12%;
+}
+
+#listDiv {
+    margin-top: 10px;
+}
+
+#toggleAll {
+    text-align: center;
+    width: 40px;
+    height: 40px;
+    position: relative;
+    top: 15px;
+    left: 8px;
+    border: none;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.toggle {
+    text-align: center;
+    width: 40px;
+    height: 40px;
+    position: relative;
+    top: 10px;
+    bottom: 0;
+    left: -10px;
+    border: none;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.toggle:after, #toggleAll:after {
+    display: block;
+    width: 40px;
+    height: 40px;
+    content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="-10 -18 100 135"><circle cx="50" cy="50" r="50" fill="none" stroke="gray" stroke-width="5"/></svg>');
+}
+
+.toggle:checked:after, #toggleAll:checked:after {
+    display: block;
+    width: 40px;
+    height: 40px;
+    content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="-10 -18 100 135"><circle cx="50" cy="50" r="50" fill="none" stroke="gray" stroke-width="5"/><path fill="cadetblue" d="M72 22 L42 68 27 53 l -6 6 22 22 36 -50 Z"/></svg>');
+}
+
+.note-time {
+    position: relative;
+    top: 20px;
+    left: 0;
+    vertical-align: top;
+}
+
+.note-label {
+    position: relative;
+    left: 10px;
+    top: 20px;
+    width: 60%;
+    display: inline-block;
+    word-wrap:break-word;
+    word-break:break-all;
+    overflow: hidden;
+    vertical-align: top;
+    margin-top: 0;
+}
+
+.editing .note-label, .editing .destroy{
+    display: none;
+}
+
+.edit {
+    position: relative;
+    left: 10px;
+    top: 20px;
+    height: 20px;
+    width: 50%;
+    vertical-align: top;
+}
+
+.destroy {
+    vertical-align: top;
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+    position: relative;
+    left: 10px;
+    top: 23px;
+    color: brown;
+    outline: none;
+    border: none;
+    background-color: whitesmoke;
+}
+
+.noteDiv {
+    border-bottom: antiquewhite 3px dotted;
+    padding-bottom: 5px;
+    width: 90%;
+    margin: 0 auto;
+}
+
+.noteP {
+    display: inline;
+}
+
+#filterDiv, #countDiv{
+    margin: 20px auto 20px auto;
+    width: 90%;
+    text-align: center;
+}
+
+#filterDiv {
+    clear: both;
+    padding-top: 20px;
+}
+
+.filterButton {
+    width: 80px;
+    height: 30px;
+    border-radius: 10px;
+    border-color: antiquewhite;
+    background-color: antiquewhite;
+}
+
+.countButton {
+    border: none;
+    background-color: whitesmoke;
+    font-size: 15px;
+    color: burlywood;
+}
+
+#count {
+    float: left;
+}
+
+#clearAll {
+    float: right;
+}
+
+#audio {
+    text-align: center;
+    height: 25px;
+}
+
+#audioDiv p {
+    margin-top: 0;
+    font-size: 15px;
+}
+
+#audioDiv{
+    margin: 20px auto 20px auto;
+    width: 90%;
+    text-align: center;
+}
