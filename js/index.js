@@ -341,11 +341,11 @@ function TouchEnd(event, noteDiv, label) {
     }
     else
     {
-        if (deltaX > 10 && Math.abs(deltaY) < 5)
+        if (deltaX > 10)
         {
             noteDiv.classList.add("swap-left");
         }
-        else if (deltaX < -10 && Math.abs(deltaY) < 5)
+        else if (deltaX < -10)
             noteDiv.classList.remove("swap-left");
     }
 
