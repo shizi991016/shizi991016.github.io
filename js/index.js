@@ -334,9 +334,10 @@ function TouchEnd(event, noteDiv, label) {
     deltaX -= event.changedTouches[0].pageX;
     deltaY -= event.changedTouches[0].pageY;
 
-    if (timeGap >= 500)
+    if (timeGap >= 1000)
     {
         changeNote(noteDiv, label);
+        console.log("change");
     }
     else
     {
