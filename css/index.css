@@ -48,6 +48,14 @@ body {
     appearance: none;
 }
 
+.swap-left .toggle {
+    display: none;
+}
+
+.swap-left .destroy {
+    display: inline;
+}
+
 .toggle {
     text-align: center;
     width: 40px;
@@ -109,6 +117,7 @@ body {
 }
 
 .destroy {
+    display: none;
     vertical-align: top;
     width: 20px;
     height: 20px;

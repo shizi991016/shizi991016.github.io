@@ -17,6 +17,9 @@ let filter = 1;
 
 let storage = window.localStorage;
 
+let deltaX = 0;
+let deltaY = 0;
+let deltaTime = 0;
 
 window.onload = function() {
     // 从本地存储获取当前 note id
@@ -249,7 +252,7 @@ function addTHMLNode(noteDiv, timeId, time, note, noteDivId, listDiv) {
         '<input class="toggle" type="checkbox">',
         '<label class="note-time" id="' + timeId + '">' + time + '</label>',
         '<p class="note-label">' + note + '</p>',
-        '<button class="destroy">X</button>'
+        '<button class="destroy">Delete</button>'
     ].join('');
 
     // 设置铃声延迟
@@ -265,12 +268,19 @@ function addTHMLNode(noteDiv, timeId, time, note, noteDivId, listDiv) {
 
 
     let label = noteDiv.querySelector('.note-label');
-    label.addEventListener('touchstart', function () {
-        changeNote(noteDiv, label);
+    // label.addEventListener('touchstart', function () {
+    //     changeNote(noteDiv, label);
+    // });
+    //
+    // label.addEventListener('touchend', function () {
+    //     clearTimeout(timer);
+    // });
+    label.addEventListener('touchstart', function (event) {
+        TouchStart(event);
     });
 
-    label.addEventListener('touchend', function () {
-        clearTimeout(timer);
+    label.addEventListener('touchend', function (event) {
+        TouchEnd(event, noteDiv, label);
     });
 
     noteDiv.querySelector('.toggle').addEventListener('change', function() {
@@ -311,4 +321,35 @@ function dealDate(dateString) {
         return null;
     else
         return hour * 60 * 60 * 1000 + minute * 60 * 1000;
+}
+
+function TouchStart(event) {
+    deltaX = event.touches[0].pageX;
+    deltaY = event.touches[0].pageY;
+    deltaTime = new Date().getTime();
+}
+
+function TouchEnd(event, noteDiv, label) {
+    let timeGap = new Date().getTime() - deltaTime;
+    deltaX -= event.changedTouches[0].pageX;
+    deltaY -= event.changedTouches[0].pageY;
+
+    if (timeGap >= 1000)
+    {
+        changeNote(noteDiv, label);
+        console.log("change");
+    }
+    else
+    {
+        if (deltaX > 50 && Math.abs(deltaY) < 10)
+        {
+            noteDiv.classList.add("swap-left");
+        }
+        else if (deltaX < -50 && Math.abs(deltaY) < 10)
+            noteDiv.classList.remove("swap-left");
+    }
+
+    deltaX = 0;
+    deltaY = 0;
+    deltaTime = 0;
 }
