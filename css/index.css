@@ -4,7 +4,7 @@ body {
 
 .main {
     margin: auto;
-    font: 20px times serif;
+    font: 25px times serif;
 }
 
 .hidden {
@@ -22,11 +22,11 @@ body {
     position: relative;
     left: 10px;
     width: 50%;
-    height: 30px;
+    height: 40px;
 }
 
 #inputHour, #inputMinute {
-    height: 30px;
+    height: 40px;
     position: relative;
     left: 10px;
     width: 12%;
@@ -95,6 +95,7 @@ body {
     left: 10px;
     top: 20px;
     width: 60%;
+    /*height: 50px;*/
     display: inline-block;
     word-wrap:break-word;
     word-break:break-all;
@@ -121,7 +122,7 @@ body {
     vertical-align: top;
     width: 20px;
     height: 20px;
-    font-size: 20px;
+    font-size: 25px;
     position: relative;
     left: 10px;
     top: 23px;
@@ -144,8 +145,11 @@ body {
 
 #filterDiv, #countDiv{
     margin: 20px auto 20px auto;
-    width: 90%;
     text-align: center;
+}
+
+#countDiv {
+    width: 90%;
 }
 
 #filterDiv {
@@ -154,17 +158,18 @@ body {
 }
 
 .filterButton {
-    width: 80px;
-    height: 30px;
+    width: 120px;
+    height: 40px;
     border-radius: 10px;
     border-color: antiquewhite;
     background-color: antiquewhite;
+    font-size: 20px;
 }
 
 .countButton {
     border: none;
     background-color: whitesmoke;
-    font-size: 15px;
+    font-size: 20px;
     color: burlywood;
 }
 
