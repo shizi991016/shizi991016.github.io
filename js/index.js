@@ -19,7 +19,6 @@ let storage = window.localStorage;
 
 let deltaX = 0;
 let deltaY = 0;
-let deltaTime = 0;
 
 window.onload = function() {
     // 从本地存储获取当前 note id
@@ -45,20 +44,33 @@ window.onload = function() {
     clearAllButton.classList.add('hidden');
 
     // 过滤 completed / active / all
-    $('all').addEventListener('click', function () {
-        filter = 1;
-        clearAllButton.classList.add('hidden');
-        update();
+    // $('all').addEventListener('click', function () {
+    //     filter = 1;
+    //     clearAllButton.classList.add('hidden');
+    //     update();
+    // });
+    // $('active').addEventListener('click', function () {
+    //     filter = 2;
+    //     clearAllButton.classList.add('hidden');
+    //     update();
+    // });
+    // $('completed').addEventListener('click', function () {
+    //     filter = 3;
+    //     clearAllButton.classList.remove('hidden');
+    //     update();
+    // });
+    // $('filterDiv').addEventListener('touchstart', function (event) {
+    //     TouchStart(event);
+    // });
+    // $('filterDiv').addEventListener('touchend', function (event) {
+    //     TouchStart(event);
+    // });
+    let filterDiv = $('filterDiv');
+    filterDiv.addEventListener('touchstart', function (event) {
+        TouchStart(event);
     });
-    $('active').addEventListener('click', function () {
-        filter = 2;
-        clearAllButton.classList.add('hidden');
-        update();
-    });
-    $('completed').addEventListener('click', function () {
-        filter = 3;
-        clearAllButton.classList.remove('hidden');
-        update();
+    filterDiv.addEventListener('touchend', function (event) {
+        TouchEndFilter(event, clearAllButton);
     });
 };
 
@@ -132,6 +144,24 @@ function update() {
             notes[i].classList.add('hidden');
     }
     $('count').innerText = count + ' notes left';
+    if (filter === 1)
+    {
+        $('all').classList.add('filterSelected');
+        $('active').classList.remove('filterSelected');
+        $('completed').classList.remove('filterSelected');
+    }
+    else if (filter === 2)
+    {
+        $('all').classList.remove('filterSelected');
+        $('active').classList.add('filterSelected');
+        $('completed').classList.remove('filterSelected');
+    }
+    else if (filter === 3)
+    {
+        $('all').classList.remove('filterSelected');
+        $('active').classList.remove('filterSelected');
+        $('completed').classList.add('filterSelected');
+    }
 }
 
 // 清除已完成的 note
@@ -326,30 +356,51 @@ function dealDate(dateString) {
 function TouchStart(event) {
     deltaX = event.touches[0].pageX;
     deltaY = event.touches[0].pageY;
-    deltaTime = new Date().getTime();
 }
 
 function TouchEnd(event, noteDiv, label) {
-    let timeGap = new Date().getTime() - deltaTime;
     deltaX -= event.changedTouches[0].pageX;
     deltaY -= event.changedTouches[0].pageY;
 
-    if (timeGap >= 1000)
+    if (deltaX > 10)
     {
-        changeNote(noteDiv, label);
-        console.log("change");
+        noteDiv.classList.add("swap-left");
     }
-    else
+    else if (deltaX < -10)
     {
-        if (deltaX > 10)
-        {
-            noteDiv.classList.add("swap-left");
-        }
-        else if (deltaX < -10)
+        if (noteDiv.classList.contains("swap-left"))
             noteDiv.classList.remove("swap-left");
+        else
+            changeNote(noteDiv, label);
     }
 
     deltaX = 0;
     deltaY = 0;
-    deltaTime = 0;
+}
+
+function TouchEndFilter(event, clearAllButton) {
+    deltaX -= event.changedTouches[0].pageX;
+
+    if (deltaX > 10)
+    {
+        if (filter >= 2)
+        {
+            filter -= 1;
+            clearAllButton.classList.add('hidden');
+            update();
+        }
+    }
+    else if (deltaX < -10)
+    {
+        if (filter <= 2)
+        {
+            filter += 1;
+            if (filter === 3)
+                clearAllButton.classList.remove('hidden');
+            update();
+        }
+    }
+
+    deltaX = 0;
+    deltaY = 0;
 }
