@@ -278,12 +278,29 @@ function changeNote(noteDiv, label) {
 
 // 向 html 中增加节点
 function addTHMLNode(noteDiv, timeId, time, note, noteDivId, listDiv) {
-    noteDiv.innerHTML = [
-        '<input class="toggle" type="checkbox">',
-        '<label class="note-time" id="' + timeId + '">' + time + '</label>',
-        '<p class="note-label">' + note + '</p>',
-        '<button class="destroy">Delete</button>'
-    ].join('');
+    // noteDiv.innerHTML = [
+    //     '<input class="toggle" type="checkbox">',
+    //     // '<label class="note-time" id="' + timeId + '">' + time + '</label>',
+    //     '<label class="note-time">' + time + '</label>',
+    //     '<p class="note-label">' + note + '</p>',
+    //     '<button class="destroy">Delete</button>'
+    // ].join('');
+    let noteInput = document.createElement('input');
+    noteInput.classList.add("toggle");
+    noteInput.type = "checkbox";
+    let noteLabel = document.createElement('label');
+    noteLabel.classList.add("note-time");
+    noteLabel.innerText = time;
+    let noteP = document.createElement('p');
+    noteP.classList.add('note-label');
+    noteP.innerText = note;
+    let noteButton = document.createElement('button');
+    noteButton.classList.add("destroy");
+    noteButton.innerText = "Delete";
+    noteDiv.append(noteInput);
+    noteDiv.append(noteLabel);
+    noteDiv.append(noteP);
+    noteDiv.append(noteButton);
 
     // 设置铃声延迟
     let clock = dealDate(time);
@@ -298,13 +315,6 @@ function addTHMLNode(noteDiv, timeId, time, note, noteDivId, listDiv) {
 
 
     let label = noteDiv.querySelector('.note-label');
-    // label.addEventListener('touchstart', function () {
-    //     changeNote(noteDiv, label);
-    // });
-    //
-    // label.addEventListener('touchend', function () {
-    //     clearTimeout(timer);
-    // });
     label.addEventListener('touchstart', function (event) {
         TouchStart(event);
     });
@@ -324,7 +334,7 @@ function addTHMLNode(noteDiv, timeId, time, note, noteDivId, listDiv) {
     let listChild = listDiv.firstChild;
     for (let i = 0; i < listDiv.childNodes.length; i++)
     {
-        if (listDiv.childNodes[i].querySelector('.note-time').id <= timeId)
+        if (listDiv.childNodes[i].querySelector('.note-time').innerText <= time)
         {
             listChild = listDiv.childNodes[i];
         }
