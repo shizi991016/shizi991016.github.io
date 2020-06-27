@@ -6,17 +6,15 @@ function $All(className) {
     return document.querySelectorAll(className);
 }
 
-// 静态类命名
-const CL_COMPLETED = 'completed';
-const CL_EDITING = 'editing';
 let noteId = 0;
-// 计时器用于判断长按
-let timer = null;
-// 用于过滤 completed 或者 active
+
+// 用于过滤 all, completed 或者 active
 let filter = 1;
 
+// 本地存储，用于刷新之后恢复页面
 let storage = window.localStorage;
 
+// 记录触摸事件的位移，判断是否为左右滑动
 let deltaX = 0;
 let deltaY = 0;
 
@@ -25,12 +23,13 @@ window.onload = function() {
     let noteid = parseInt(storage.getItem('noteId'));
     if (noteid)
         noteId = noteid;
+
     // 从本地存储添加 note
     addFromStorage();
 
     // 回车输入
     $('inputText').addEventListener('keyup', function (event) {
-        if (event.keyCode !== 13)
+        if (event.key !== "Enter")
             return;
         addNote();
     });
@@ -43,28 +42,6 @@ window.onload = function() {
     clearAllButton.addEventListener('click', clearCompletedList);
     clearAllButton.classList.add('hidden');
 
-    // 过滤 completed / active / all
-    // $('all').addEventListener('click', function () {
-    //     filter = 1;
-    //     clearAllButton.classList.add('hidden');
-    //     update();
-    // });
-    // $('active').addEventListener('click', function () {
-    //     filter = 2;
-    //     clearAllButton.classList.add('hidden');
-    //     update();
-    // });
-    // $('completed').addEventListener('click', function () {
-    //     filter = 3;
-    //     clearAllButton.classList.remove('hidden');
-    //     update();
-    // });
-    // $('filterDiv').addEventListener('touchstart', function (event) {
-    //     TouchStart(event);
-    // });
-    // $('filterDiv').addEventListener('touchend', function (event) {
-    //     TouchStart(event);
-    // });
     let filterDiv = $('filterDiv');
     filterDiv.addEventListener('touchstart', function (event) {
         TouchStart(event);
@@ -78,6 +55,7 @@ window.onload = function() {
 function addNote() {
     let inputText = $('inputText');
     let note = inputText.value;
+    // 如果输入为空，直接return
     if (note === '')
         return;
 
@@ -88,12 +66,13 @@ function addNote() {
     storage.setItem('noteId', noteId.toString());
     noteDiv.setAttribute('id', id);
     noteDiv.setAttribute('class', 'noteDiv');
+    // 获得闹钟设定时间
     let hour = $('inputHour').value;
     let minute = $('inputMinute').value;
     let time = hour + ':' + minute;
     let timeId = hour + minute;
     // 向html中添加节点
-    addTHMLNode(noteDiv, timeId, time, note, id, listDiv);
+    addHTMLNode(noteDiv, timeId, time, note, id, listDiv);
     let message = timeId + ";" + time + ";" + note + ";" + "active";
     // 将 note 存入本地存储
     storage.setItem(id, message);
@@ -106,15 +85,16 @@ function updateNote(noteId, completed) {
     let noteDiv = $(noteId);
     if (completed)
     {
-        noteDiv.classList.add(CL_COMPLETED);
+        // 添加class 用于filter查找
+        noteDiv.classList.add('completed');
         updateStorage(noteId, "completed", 3);
     }
     else
     {
-        noteDiv.classList.remove(CL_COMPLETED);
+        noteDiv.classList.remove('completed');
         updateStorage(noteId, "active", 3);
+        $('toggleAll').checked = false;
     }
-    $('toggleAll').checked = false;
     update();
 }
 
@@ -124,43 +104,50 @@ function removeNote(noteId) {
     let noteDiv = $(noteId);
     listDiv.removeChild(noteDiv);
     storage.removeItem(noteId);
-    $('toggleAll').checked = false;
     update();
 }
 
 // 按照 filter 更新 html 内容，更新当前 active note 个数
 function update() {
+    // 用于记录当前活跃note数量
     let count = 0;
     let notes = $All('.noteDiv');
     for (let i = 0; i < notes.length; i++)
     {
-        if (!notes[i].classList.contains(CL_COMPLETED))
+        if (!notes[i].classList.contains('completed'))
             count++;
         if (filter === 1
-            || (filter === 2 && !notes[i].classList.contains(CL_COMPLETED))
-            || (filter === 3 && notes[i].classList.contains(CL_COMPLETED)))
+            || (filter === 2 && !notes[i].classList.contains('completed'))
+            || (filter === 3 && notes[i].classList.contains('completed')))
             notes[i].classList.remove('hidden');
         else
             notes[i].classList.add('hidden');
     }
     $('count').innerText = count + ' notes left';
-    if (filter === 1)
+
+    // 设置被选中filter红色高亮
+    let allFilter = $('all');
+    let activeFilter = $('active');
+    let completedFilter = $('completed');
+    switch (filter)
     {
-        $('all').classList.add('filterSelected');
-        $('active').classList.remove('filterSelected');
-        $('completed').classList.remove('filterSelected');
-    }
-    else if (filter === 2)
-    {
-        $('all').classList.remove('filterSelected');
-        $('active').classList.add('filterSelected');
-        $('completed').classList.remove('filterSelected');
-    }
-    else if (filter === 3)
-    {
-        $('all').classList.remove('filterSelected');
-        $('active').classList.remove('filterSelected');
-        $('completed').classList.add('filterSelected');
+        case 1:
+            allFilter.classList.add('filterSelected');
+            activeFilter.classList.remove('filterSelected');
+            completedFilter.classList.remove('filterSelected');
+            break;
+        case 2:
+            allFilter.classList.remove('filterSelected');
+            activeFilter.classList.add('filterSelected');
+            completedFilter.classList.remove('filterSelected');
+            break;
+        case 3:
+            allFilter.classList.remove('filterSelected');
+            activeFilter.classList.remove('filterSelected');
+            completedFilter.classList.add('filterSelected');
+            break;
+        default:
+            break;
     }
 }
 
@@ -170,7 +157,7 @@ function clearCompletedList() {
     let notes = listDiv.querySelectorAll('.noteDiv');
     for (let i = notes.length - 1; i >= 0; --i) {
         let note = notes[i];
-        if (note.classList.contains(CL_COMPLETED)) {
+        if (note.classList.contains('completed')) {
             listDiv.removeChild(note);
             storage.removeItem(note.id);
         }
@@ -191,12 +178,12 @@ function toggleAllList() {
             toggle.checked = checked;
             if (checked)
             {
-                note.classList.add(CL_COMPLETED);
+                note.classList.add('completed');
                 updateStorage(note.id, "completed", 3);
             }
             else
             {
-                note.classList.remove(CL_COMPLETED);
+                note.classList.remove('completed');
                 updateStorage(note.id, "active", 3);
             }
         }
@@ -228,10 +215,10 @@ function addFromStorage() {
             let noteDiv = document.createElement('div');
             noteDiv.setAttribute('id', id);
             noteDiv.setAttribute('class', 'noteDiv');
-            addTHMLNode(noteDiv, text[0], text[1], text[2], id, listDiv);
+            addHTMLNode(noteDiv, text[0], text[1], text[2], id, listDiv);
             if (text[3] !== "active")
             {
-                noteDiv.classList.add(CL_COMPLETED);
+                noteDiv.classList.add('completed');
                 noteDiv.querySelector('.toggle').checked = true;
             }
         }
@@ -241,50 +228,43 @@ function addFromStorage() {
 
 // 更改 note 内容
 function changeNote(noteDiv, label) {
-    timer = setTimeout(function () {
-        noteDiv.classList.add(CL_EDITING);
+    // 增加class标签，hidden原有展示区域，新增修改区域
+    noteDiv.classList.add('editing');
 
-        let edit = document.createElement('input');
-        let finished = false;
-        edit.setAttribute('type', 'text');
-        edit.setAttribute('class', 'edit');
-        edit.setAttribute('value', label.innerText);
+    let edit = document.createElement('input');
+    let finished = false;
+    edit.setAttribute('type', 'text');
+    edit.setAttribute('class', 'edit');
+    edit.setAttribute('value', label.innerText);
 
-        function finish() {
-            if (finished)
-                return;
-            finished = true;
-            noteDiv.removeChild(edit);
-            noteDiv.classList.remove(CL_EDITING);
-        }
+    function finish() {
+        if (finished)
+            return;
+        finished = true;
+        noteDiv.removeChild(edit);
+        noteDiv.classList.remove('editing');
+    }
 
-        edit.addEventListener('blur', function () {
+    edit.addEventListener('blur', function () {
+        finish();
+    });
+
+    edit.addEventListener('keyup', function (ev) {
+        if (ev.key === "Enter")
+        {
+            label.innerHTML = this.value;
+            updateStorage(noteDiv.id, this.value, 2);
             finish();
-        });
+        }
+    });
 
-        edit.addEventListener('keyup', function (ev) {
-            if (ev.keyCode === 13)
-            {
-                label.innerHTML = this.value;
-                updateStorage(noteDiv.id, this.value, 2);
-                finish();
-            }
-        });
-
-        noteDiv.insertBefore(edit, noteDiv.lastChild);
-        edit.focus();
-    }, 2000)
+    // 插入在delete按钮之前
+    noteDiv.insertBefore(edit, noteDiv.lastChild);
+    edit.focus();
 }
 
 // 向 html 中增加节点
-function addTHMLNode(noteDiv, timeId, time, note, noteDivId, listDiv) {
-    // noteDiv.innerHTML = [
-    //     '<input class="toggle" type="checkbox">',
-    //     // '<label class="note-time" id="' + timeId + '">' + time + '</label>',
-    //     '<label class="note-time">' + time + '</label>',
-    //     '<p class="note-label">' + note + '</p>',
-    //     '<button class="destroy">Delete</button>'
-    // ].join('');
+function addHTMLNode(noteDiv, timeId, time, note, noteDivId, listDiv) {
     let noteInput = document.createElement('input');
     noteInput.classList.add("toggle");
     noteInput.type = "checkbox";
@@ -315,6 +295,7 @@ function addTHMLNode(noteDiv, timeId, time, note, noteDivId, listDiv) {
 
 
     let label = noteDiv.querySelector('.note-label');
+    // 监听note内容上的左右滑动事件
     label.addEventListener('touchstart', function (event) {
         TouchStart(event);
     });
@@ -372,11 +353,11 @@ function TouchEnd(event, noteDiv, label) {
     deltaX -= event.changedTouches[0].pageX;
     deltaY -= event.changedTouches[0].pageY;
 
-    if (deltaX > 10)
+    if (deltaX > 20)
     {
         noteDiv.classList.add("swap-left");
     }
-    else if (deltaX < -10)
+    else if (deltaX < -20)
     {
         if (noteDiv.classList.contains("swap-left"))
             noteDiv.classList.remove("swap-left");
@@ -391,7 +372,7 @@ function TouchEnd(event, noteDiv, label) {
 function TouchEndFilter(event, clearAllButton) {
     deltaX -= event.changedTouches[0].pageX;
 
-    if (deltaX > 10)
+    if (deltaX > 20)
     {
         if (filter >= 2)
         {
@@ -400,7 +381,7 @@ function TouchEndFilter(event, clearAllButton) {
             update();
         }
     }
-    else if (deltaX < -10)
+    else if (deltaX < -20)
     {
         if (filter <= 2)
         {
